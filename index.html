@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Mentor AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .prose {
+            max-width: none;
+        }
+        .prose h3 {
+            margin-bottom: 0.5em;
+            font-weight: 600;
+        }
+        .prose ul {
+            list-style-position: inside;
+            padding-left: 0;
+        }
+        .prose li {
+            margin-bottom: 0.25rem;
+        }
+        .prose strong, .prose b {
+            font-weight: 600;
+        }
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-800 antialiased">
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <header class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white text-center">
+                <h1 class="text-3xl md:text-4xl font-bold">IELTS Mentor AI</h1>
+                <p class="mt-2 text-blue-100">Nhận phản hồi chuyên sâu và tạo câu hỏi luyện tập IELTS</p>
+            </header>
+
+            <main class="p-6 md:p-8">
+                <!-- Tab Navigation -->
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                        <button id="tab-writing" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-indigo-500 text-indigo-600">
+                            Writing
+                        </button>
+                        <button id="tab-speaking" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Speaking
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Content Panels -->
+                <div class="mt-6">
+                    <!-- Writing Panel -->
+                    <div id="panel-writing">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                            <div>
+                                <label for="writing-task" class="block text-sm font-medium text-gray-700 mb-2">Chọn dạng bài Writing:</label>
+                                <select id="writing-task" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="1">Task 1 (General Training - Letter)</option>
+                                    <option value="1-academic">Task 1 (Academic - Report)</option>
+                                    <option value="2" selected>Task 2 (Essay)</option>
+                                </select>
+                            </div>
+                            <div>
+                               <button id="generate-writing-question" class="w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition">
+                                    Tạo câu hỏi ngẫu nhiên
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="writing-question-display" class="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 min-h-[70px]">
+                            <p class="text-gray-500 italic">Câu hỏi Writing sẽ xuất hiện ở đây...</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="writing-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Tải lên tệp (.txt):</label>
+                            <input id="writing-file-upload" type="file" accept=".txt" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="writing-input" class="block text-sm font-medium text-gray-700 mb-2">Nhập hoặc dán bài viết của bạn:</label>
+                            <textarea id="writing-input" rows="12" class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Bắt đầu viết ở đây..."></textarea>
+                        </div>
+                        <button id="get-writing-feedback" class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-101">
+                            Nhận Phản Hồi Writing
+                        </button>
+                    </div>
+
+                    <!-- Speaking Panel -->
+                    <div id="panel-speaking" class="hidden">
+                         <button id="generate-speaking-question" class="w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition mb-4">
+                            Tạo câu hỏi Speaking (Part 2)
+                        </button>
+
+                        <div id="speaking-question-display" class="p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 min-h-[70px]">
+                            <p class="text-gray-500 italic">Câu hỏi Speaking sẽ xuất hiện ở đây...</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="speaking-input" class="block text-sm font-medium text-gray-700 mb-2">Dán bản ghi lời nói (transcript):</label>
+                            <textarea id="speaking-input" rows="12" class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ví dụ: 'Hello, my name is Alex. Today I'd like to talk about the importance of...'"></textarea>
+                        </div>
+                        <button id="get-speaking-feedback" class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-101">
+                            Nhận Phản Hồi Speaking
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Feedback Display -->
+                <div id="feedback-section" class="mt-8 border-t pt-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Phản Hồi từ Mentor AI</h2>
+                    <div id="loader" class="hidden flex justify-center items-center my-8">
+                        <div class="loader"></div>
+                        <p class="ml-4 text-gray-600">AI đang phân tích bài của bạn...</p>
+                    </div>
+                    <div id="feedback-output" class="prose bg-gray-50 p-6 rounded-lg min-h-[100px]">
+                       <p class="text-gray-500">Phản hồi của bạn sẽ xuất hiện ở đây.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_KEY = 'AIzaSyB1Ao6_-5w-hXQ7WHAsXcOCqZrymPDfhQk';
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+
+            // DOM Elements
+            const tabs = { writing: document.getElementById('tab-writing'), speaking: document.getElementById('tab-speaking') };
+            const panels = { writing: document.getElementById('panel-writing'), speaking: document.getElementById('panel-speaking') };
+            const inputs = { writing: document.getElementById('writing-input'), speaking: document.getElementById('speaking-input') };
+            const feedbackButtons = { writing: document.getElementById('get-writing-feedback'), speaking: document.getElementById('get-speaking-feedback') };
+            const generateButtons = { writing: document.getElementById('generate-writing-question'), speaking: document.getElementById('generate-speaking-question') };
+            const questionDisplays = { writing: document.getElementById('writing-question-display'), speaking: document.getElementById('speaking-question-display') };
+            const fileUploads = { writing: document.getElementById('writing-file-upload') };
+            const feedbackOutput = document.getElementById('feedback-output');
+            const loader = document.getElementById('loader');
+            const writingTaskSelector = document.getElementById('writing-task');
+            
+            // --- Tab Switching Logic ---
+            function switchTab(activeTab) {
+                Object.keys(tabs).forEach(key => {
+                    const tab = tabs[key];
+                    const panel = panels[key];
+                    if (key === activeTab) {
+                        tab.classList.remove('border-transparent', 'text-gray-500');
+                        tab.classList.add('border-indigo-500', 'text-indigo-600');
+                        panel.classList.remove('hidden');
+                    } else {
+                        tab.classList.remove('border-indigo-500', 'text-indigo-600');
+                        tab.classList.add('border-transparent', 'text-gray-500');
+                        panel.classList.add('hidden');
+                    }
+                });
+            }
+
+            tabs.writing.addEventListener('click', () => switchTab('writing'));
+            tabs.speaking.addEventListener('click', () => switchTab('speaking'));
+
+            // --- File Reader Logic ---
+            fileUploads.writing.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => { inputs.writing.value = e.target.result; };
+                    reader.readAsText(file);
+                }
+            });
+
+            // --- Simple Markdown to HTML converter ---
+            function simpleMarkdownToHtml(md) {
+                md = md.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+                md = md.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+                md = md.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+                md = md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                md = md.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                md = md.replace(/^\* (.*$)/gim, '<ul>\n<li>$1</li>\n</ul>').replace(/<\/ul>\s?<ul>/g, '');
+                md = md.replace(/\n/g, '<br>');
+                return md;
+            }
+            
+            // --- Question Generation Logic ---
+            const generateQuestion = async (type) => {
+                const displayElement = questionDisplays[type];
+                displayElement.innerHTML = `<p class="text-gray-600">Đang tạo câu hỏi, vui lòng chờ...</p>`;
+                
+                const systemPrompt = "You are an IELTS expert specializing in creating exam questions. Your task is to generate a single, authentic-style IELTS question based on the user's request. Only output the question itself, without any introductory text like 'Here is a question...'";
+                let userPrompt = '';
+
+                if (type === 'writing') {
+                    const taskType = writingTaskSelector.value;
+                    let taskName = "Task 2 (Essay)";
+                    if (taskType === "1") taskName = "Task 1 (General Training - Letter)";
+                    if (taskType === "1-academic") taskName = "Task 1 (Academic - Report)";
+                    userPrompt = `Generate one IELTS Writing ${taskName} question.`;
+                } else { // speaking
+                    userPrompt = `Generate one IELTS Speaking Part 2 question (a cue card), including the main topic and the three 'you should say' bullet points.`;
+                }
+
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        displayElement.innerHTML = simpleMarkdownToHtml(text);
+                    } else {
+                        throw new Error("Không nhận được câu hỏi hợp lệ từ AI.");
+                    }
+                } catch (error) {
+                    console.error("Question Generation Error:", error);
+                    displayElement.innerHTML = `<p class="text-red-600 font-semibold">Lỗi tạo câu hỏi: ${error.message}</p>`;
+                }
+            };
+            
+            // --- Feedback Generation Logic ---
+            const getFeedback = async (type, content) => {
+                if (!content.trim()) {
+                    feedbackOutput.innerHTML = `<p class="text-red-600 font-semibold">Vui lòng nhập nội dung bài ${type} của bạn.</p>`;
+                    return;
+                }
+
+                loader.classList.remove('hidden');
+                feedbackOutput.innerHTML = '<p class="text-gray-500">Phản hồi của bạn sẽ xuất hiện ở đây.</p>';
+
+                let systemPrompt = "You are an expert IELTS examiner. Provide detailed, constructive feedback on a candidate's submission based on the official band descriptors. For each criterion, provide a detailed analysis and an estimated band score. Conclude with an overall estimated band score and specific, actionable suggestions for improvement. Format your response clearly using Markdown.";
+                
+                let userPrompt = '';
+                if (type === 'writing') {
+                    const taskType = writingTaskSelector.value;
+                    let taskName = "Task 2 (Essay)";
+                    if (taskType === "1") taskName = "Task 1 (General Training - Letter)";
+                    if (taskType === "1-academic") taskName = "Task 1 (Academic - Report)";
+                    userPrompt = `Evaluate the following IELTS Writing ${taskName}:\n\n---\n\n${content}`;
+                } else { // speaking
+                    userPrompt = `Evaluate the following IELTS Speaking transcript based on Fluency and Coherence, Lexical Resource, Grammatical Range and Accuracy, and Pronunciation (based on the provided text). Note that pronunciation is an assumption based on the words used.\n\n---\n\n${content}`;
+                }
+
+                const payload = {
+                    contents: [{ parts: [{ text: userPrompt }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        feedbackOutput.innerHTML = simpleMarkdownToHtml(text);
+                    } else {
+                        throw new Error("Không nhận được phản hồi hợp lệ từ AI.");
+                    }
+                } catch (error) {
+                    console.error("API Error:", error);
+                    feedbackOutput.innerHTML = `<p class="text-red-600 font-semibold">Đã có lỗi xảy ra: ${error.message}.</p>`;
+                } finally {
+                    loader.classList.add('hidden');
+                }
+            };
+
+            // --- Event Listeners ---
+            feedbackButtons.writing.addEventListener('click', () => getFeedback('writing', inputs.writing.value));
+            feedbackButtons.speaking.addEventListener('click', () => getFeedback('speaking', inputs.speaking.value));
+            generateButtons.writing.addEventListener('click', () => generateQuestion('writing'));
+            generateButtons.speaking.addEventListener('click', () => generateQuestion('speaking'));
+        });
+    </script>
+</body>
+</html>
+
