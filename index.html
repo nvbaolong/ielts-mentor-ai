@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,7 +64,7 @@
             <!-- Header -->
             <header class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-white text-center">
                 <h1 class="text-3xl md:text-4xl font-bold">IELTS Mentor AI</h1>
-                <p class="mt-2 text-blue-100">Nhận phản hồi chuyên sâu và tạo câu hỏi luyện tập IELTS</p>
+                <p class="mt-2 text-blue-100">Get in-depth feedback and generate IELTS practice questions</p>
             </header>
 
             <main class="p-6 md:p-8">
@@ -86,7 +86,7 @@
                     <div id="panel-writing">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
                             <div>
-                                <label for="writing-task" class="block text-sm font-medium text-gray-700 mb-2">Chọn dạng bài Writing:</label>
+                                <label for="writing-task" class="block text-sm font-medium text-gray-700 mb-2">Select Writing Task Type:</label>
                                 <select id="writing-task" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                                     <option value="1">Task 1 (General Training - Letter)</option>
                                     <option value="1-academic">Task 1 (Academic - Report)</option>
@@ -95,65 +95,65 @@
                             </div>
                             <div>
                                <button id="generate-writing-question" class="w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition">
-                                    Tạo câu hỏi ngẫu nhiên
+                                    Generate Random Question
                                 </button>
                             </div>
                         </div>
                         
                         <div id="writing-question-display" class="mt-4 p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 min-h-[70px]">
-                            <p class="text-gray-500 italic">Câu hỏi Writing sẽ xuất hiện ở đây...</p>
+                            <p class="text-gray-500 italic">Your Writing question will appear here...</p>
                         </div>
 
                         <div class="mt-4">
-                            <label for="writing-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Tải lên tệp (.txt, .md, .docx):</label>
+                            <label for="writing-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Upload a file (.txt, .md, .docx):</label>
                             <input id="writing-file-upload" type="file" accept=".txt,.md,.docx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                             <p id="writing-upload-status" class="text-sm text-gray-500 mt-2"></p>
                         </div>
 
                         <div class="mt-4">
-                            <label for="writing-input" class="block text-sm font-medium text-gray-700 mb-2">Nhập hoặc dán bài viết của bạn:</label>
-                            <textarea id="writing-input" rows="12" class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Bắt đầu viết ở đây..."></textarea>
+                            <label for="writing-input" class="block text-sm font-medium text-gray-700 mb-2">Type or paste your essay here:</label>
+                            <textarea id="writing-input" rows="12" class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Start writing here..."></textarea>
                         </div>
                         <button id="get-writing-feedback" class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-101">
-                            Nhận Phản Hồi Writing
+                            Get Writing Feedback
                         </button>
                     </div>
 
                     <!-- Speaking Panel -->
                     <div id="panel-speaking" class="hidden">
                          <button id="generate-speaking-question" class="w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition mb-4">
-                            Tạo câu hỏi Speaking (Part 2)
+                            Generate Speaking Question (Part 2)
                         </button>
 
                         <div id="speaking-question-display" class="p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 min-h-[70px]">
-                            <p class="text-gray-500 italic">Câu hỏi Speaking sẽ xuất hiện ở đây...</p>
+                            <p class="text-gray-500 italic">Your Speaking question will appear here...</p>
                         </div>
 
                         <div class="mt-4">
-                            <label for="speaking-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Hoặc tải lên tệp âm thanh (auto-transcript):</label>
+                            <label for="speaking-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Or upload an audio file (auto-transcript):</label>
                             <input id="speaking-file-upload" type="file" accept="audio/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                             <p id="transcript-status" class="text-sm text-gray-500 mt-2"></p>
                         </div>
 
                         <div class="mt-4">
-                            <label for="speaking-input" class="block text-sm font-medium text-gray-700 mb-2">Dán bản ghi lời nói (transcript):</label>
-                            <textarea id="speaking-input" rows="12" class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Ví dụ: 'Hello, my name is Alex. Today I'd like to talk about the importance of...'"></textarea>
+                            <label for="speaking-input" class="block text-sm font-medium text-gray-700 mb-2">Paste your transcript here:</label>
+                            <textarea id="speaking-input" rows="12" class="w-full p-4 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 'Hello, my name is Alex. Today I'd like to talk about the importance of...'"></textarea>
                         </div>
                         <button id="get-speaking-feedback" class="mt-4 w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-101">
-                            Nhận Phản Hồi Speaking
+                            Get Speaking Feedback
                         </button>
                     </div>
                 </div>
 
                 <!-- Feedback Display -->
                 <div id="feedback-section" class="mt-8 border-t pt-6">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Phản Hồi từ Mentor AI</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Feedback from Mentor AI</h2>
                     <div id="loader" class="hidden flex justify-center items-center my-8">
                         <div class="loader"></div>
-                        <p class="ml-4 text-gray-600">AI đang phân tích bài của bạn...</p>
+                        <p class="ml-4 text-gray-600">AI is analyzing your submission...</p>
                     </div>
                     <div id="feedback-output" class="prose bg-gray-50 p-6 rounded-lg min-h-[100px]">
-                       <p class="text-gray-500">Phản hồi của bạn sẽ xuất hiện ở đây.</p>
+                       <p class="text-gray-500">Your feedback will appear here.</p>
                     </div>
                 </div>
             </main>
@@ -214,23 +214,23 @@
                 const fileExtension = fileName.split('.').pop().toLowerCase();
                 const reader = new FileReader();
 
-                writingUploadStatus.textContent = `Đang đọc tệp: ${fileName}...`;
+                writingUploadStatus.textContent = `Reading file: ${fileName}...`;
                 writingUploadStatus.className = 'text-sm text-blue-600 mt-2';
 
                 if (['txt', 'md'].includes(fileExtension)) {
                     reader.onload = (e) => {
                         inputs.writing.value = e.target.result;
-                        writingUploadStatus.textContent = 'Tải tệp lên thành công!';
+                        writingUploadStatus.textContent = 'File uploaded successfully!';
                         writingUploadStatus.className = 'text-sm text-green-600 mt-2';
                     };
                     reader.onerror = () => {
-                        writingUploadStatus.textContent = 'Lỗi khi đọc tệp.';
+                        writingUploadStatus.textContent = 'Error reading file.';
                         writingUploadStatus.className = 'text-sm text-red-600 mt-2';
                     };
                     reader.readAsText(file);
                 } else if (fileExtension === 'docx') {
                     if (typeof mammoth === 'undefined') {
-                        writingUploadStatus.textContent = 'Lỗi: Thư viện xử lý .docx chưa được tải. Vui lòng kiểm tra kết nối mạng.';
+                        writingUploadStatus.textContent = 'Error: .docx processing library not loaded. Please check your internet connection.';
                         writingUploadStatus.className = 'text-sm text-red-600 mt-2';
                         return;
                     }
@@ -239,22 +239,22 @@
                         mammoth.extractRawText({ arrayBuffer: arrayBuffer })
                             .then(result => {
                                 inputs.writing.value = result.value;
-                                writingUploadStatus.textContent = 'Trích xuất văn bản từ .docx thành công!';
+                                writingUploadStatus.textContent = 'Successfully extracted text from .docx!';
                                 writingUploadStatus.className = 'text-sm text-green-600 mt-2';
                             })
                             .catch(err => {
                                 console.error("Error processing .docx file:", err);
-                                writingUploadStatus.textContent = 'Lỗi khi xử lý tệp .docx.';
+                                writingUploadStatus.textContent = 'Error processing .docx file.';
                                 writingUploadStatus.className = 'text-sm text-red-600 mt-2';
                             });
                     };
                     reader.onerror = () => {
-                        writingUploadStatus.textContent = 'Lỗi khi đọc tệp .docx.';
+                        writingUploadStatus.textContent = 'Error reading .docx file.';
                         writingUploadStatus.className = 'text-sm text-red-600 mt-2';
                     };
                     reader.readAsArrayBuffer(file);
                 } else {
-                    writingUploadStatus.textContent = 'Định dạng không hỗ trợ. Vui lòng chọn .txt, .md, hoặc .docx.';
+                    writingUploadStatus.textContent = 'Unsupported format. Please select .txt, .md, or .docx.';
                     writingUploadStatus.className = 'text-sm text-red-600 mt-2';
                     event.target.value = ''; // Clear the input
                 }
@@ -265,7 +265,7 @@
                 const file = event.target.files[0];
                 if (file) {
                     if (file.size > 15 * 1024 * 1024) { // ~15MB limit
-                        transcriptStatus.textContent = 'Lỗi: Tệp âm thanh quá lớn (tối đa 15MB).';
+                        transcriptStatus.textContent = 'Error: Audio file is too large (max 15MB).';
                         transcriptStatus.className = 'text-sm text-red-600 mt-2';
                         fileUploads.speaking.value = '';
                         return;
@@ -277,7 +277,7 @@
                         transcribeAudio(base64Data, file.type);
                     };
                     reader.onerror = () => {
-                        transcriptStatus.textContent = 'Lỗi khi đọc tệp.';
+                        transcriptStatus.textContent = 'Error reading file.';
                         transcriptStatus.className = 'text-sm text-red-600 mt-2';
                     };
                     reader.readAsDataURL(file);
@@ -285,11 +285,11 @@
             });
 
             const transcribeAudio = async (base64Data, mimeType) => {
-                transcriptStatus.textContent = 'Đang chuyển đổi âm thanh thành văn bản...';
+                transcriptStatus.textContent = 'Transcribing audio to text...';
                 transcriptStatus.className = 'text-sm text-blue-600 mt-2';
                 inputs.speaking.value = '';
                 loader.classList.remove('hidden');
-                feedbackOutput.innerHTML = '<p class="text-gray-500">Phản hồi của bạn sẽ xuất hiện ở đây.</p>';
+                feedbackOutput.innerHTML = '<p class="text-gray-500">Your feedback will appear here.</p>';
 
                 const systemPrompt = "You are a highly accurate audio transcription service. Transcribe the user's audio to text. Only output the transcribed text, nothing else.";
                 const userPrompt = "Transcribe this audio file for me.";
@@ -321,14 +321,14 @@
 
                     if (text && text.trim()) {
                         inputs.speaking.value = text;
-                        transcriptStatus.textContent = 'Chuyển đổi thành công! Vui lòng kiểm tra văn bản và nhấn nhận phản hồi.';
+                        transcriptStatus.textContent = 'Transcription successful! Please review the text and get feedback.';
                         transcriptStatus.className = 'text-sm text-green-600 mt-2';
                     } else {
-                        throw new Error("Không thể chuyển đổi âm thanh. Tệp có thể không chứa lời nói.");
+                        throw new Error("Could not transcribe audio. The file might not contain speech.");
                     }
                 } catch (error) {
                     console.error("Transcription Error:", error);
-                    transcriptStatus.textContent = `Lỗi chuyển đổi: ${error.message}`;
+                    transcriptStatus.textContent = `Transcription Error: ${error.message}`;
                     transcriptStatus.className = 'text-sm text-red-600 mt-2';
                 } finally {
                     loader.classList.add('hidden');
@@ -351,9 +351,9 @@
             // --- Question Generation Logic ---
             const generateQuestion = async (type) => {
                 const displayElement = questionDisplays[type];
-                displayElement.innerHTML = `<p class="text-gray-600">Đang tạo câu hỏi, vui lòng chờ...</p>`;
+                displayElement.innerHTML = `<p class="text-gray-600">Generating question, please wait...</p>`;
                 
-                const systemPrompt = "Bạn là một chuyên gia IELTS chuyên tạo câu hỏi thi. Nhiệm vụ của bạn là tạo ra một câu hỏi duy nhất theo phong cách IELTS chân thực dựa trên yêu cầu của người dùng. Hãy tạo câu hỏi bằng tiếng Việt và chỉ xuất ra câu hỏi, không có bất kỳ đoạn giới thiệu nào như 'Đây là câu hỏi...'";
+                const systemPrompt = "You are an IELTS expert who creates exam questions. Your task is to generate a single, authentic IELTS-style question based on the user's request. Output only the question, with no introductory text like 'Here is your question...'";
                 let userPrompt = '';
 
                 if (type === 'writing') {
@@ -383,24 +383,25 @@
                     if (text) {
                         displayElement.innerHTML = simpleMarkdownToHtml(text);
                     } else {
-                        throw new Error("Không nhận được câu hỏi hợp lệ từ AI.");
+                        throw new Error("Could not get a valid question from the AI.");
                     }
                 } catch (error) {
                     console.error("Question Generation Error:", error);
-                    displayElement.innerHTML = `<p class="text-red-600 font-semibold">Lỗi tạo câu hỏi: ${error.message}</p>`;
+                    displayElement.innerHTML = `<p class="text-red-600 font-semibold">Error generating question: ${error.message}</p>`;
                 }
             };
             
             // --- Feedback Generation Logic ---
             const getFeedback = async (type, content) => {
                 if (!content.trim()) {
-                    feedbackOutput.innerHTML = `<p class="text-red-600 font-semibold">Vui lòng nhập nội dung bài ${type} của bạn.</p>`;
+                    feedbackOutput.innerHTML = `<p class="text-red-600 font-semibold">Please enter your ${type} submission content.</p>`;
                     return;
                 }
 
                 loader.classList.remove('hidden');
-                feedbackOutput.innerHTML = '<p class="text-gray-500">Phản hồi của bạn sẽ xuất hiện ở đây.</p>';
+                feedbackOutput.innerHTML = '<p class="text-gray-500">Your feedback will appear here.</p>';
 
+                // THIS PROMPT REMAINS IN VIETNAMESE AS PER USER REQUEST
                 const systemPrompt = "Bạn là một giám khảo IELTS chuyên nghiệp. Nhiệm vụ của bạn là đưa ra nhận xét chi tiết, mang tính xây dựng cho bài làm của thí sinh bằng tiếng Việt. Hãy đánh giá bài làm dựa trên các tiêu chí chấm điểm IELTS chính thức (Task Achievement/Response, Coherence and Cohesion, Lexical Resource, Grammatical Range and Accuracy). Với mỗi tiêu chí, hãy phân tích chi tiết và đưa ra thang điểm ước tính. Cuối cùng, hãy đưa ra tổng điểm ước tính và những gợi ý cụ thể, khả thi để cải thiện. Hãy trả lời hoàn toàn bằng tiếng Việt. Định dạng câu trả lời của bạn một cách rõ ràng bằng Markdown.";
                 
                 let userPrompt = '';
@@ -434,11 +435,11 @@
                     if (text) {
                         feedbackOutput.innerHTML = simpleMarkdownToHtml(text);
                     } else {
-                        throw new Error("Không nhận được phản hồi hợp lệ từ AI.");
+                        throw new Error("Could not get a valid response from the AI.");
                     }
                 } catch (error) {
                     console.error("API Error:", error);
-                    feedbackOutput.innerHTML = `<p class="text-red-600 font-semibold">Đã có lỗi xảy ra: ${error.message}.</p>`;
+                    feedbackOutput.innerHTML = `<p class="text-red-600 font-semibold">An error occurred: ${error.message}.</p>`;
                 } finally {
                     loader.classList.add('hidden');
                 }
