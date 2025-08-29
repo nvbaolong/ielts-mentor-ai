@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.1/mammoth.browser.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -104,8 +105,9 @@
                         </div>
 
                         <div class="mt-4">
-                            <label for="writing-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Tải lên tệp (.txt):</label>
-                            <input id="writing-file-upload" type="file" accept=".txt" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <label for="writing-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Tải lên tệp (.txt, .md, .docx):</label>
+                            <input id="writing-file-upload" type="file" accept=".txt,.md,.docx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <p id="writing-upload-status" class="text-sm text-gray-500 mt-2"></p>
                         </div>
 
                         <div class="mt-4">
@@ -125,6 +127,12 @@
 
                         <div id="speaking-question-display" class="p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 min-h-[70px]">
                             <p class="text-gray-500 italic">Câu hỏi Speaking sẽ xuất hiện ở đây...</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="speaking-file-upload" class="block text-sm font-medium text-gray-700 mb-2">Hoặc tải lên tệp âm thanh (auto-transcript):</label>
+                            <input id="speaking-file-upload" type="file" accept="audio/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <p id="transcript-status" class="text-sm text-gray-500 mt-2"></p>
                         </div>
 
                         <div class="mt-4">
@@ -164,7 +172,12 @@
             const feedbackButtons = { writing: document.getElementById('get-writing-feedback'), speaking: document.getElementById('get-speaking-feedback') };
             const generateButtons = { writing: document.getElementById('generate-writing-question'), speaking: document.getElementById('generate-speaking-question') };
             const questionDisplays = { writing: document.getElementById('writing-question-display'), speaking: document.getElementById('speaking-question-display') };
-            const fileUploads = { writing: document.getElementById('writing-file-upload') };
+            const fileUploads = { 
+                writing: document.getElementById('writing-file-upload'),
+                speaking: document.getElementById('speaking-file-upload')
+            };
+            const transcriptStatus = document.getElementById('transcript-status');
+            const writingUploadStatus = document.getElementById('writing-upload-status');
             const feedbackOutput = document.getElementById('feedback-output');
             const loader = document.getElementById('loader');
             const writingTaskSelector = document.getElementById('writing-task');
@@ -175,12 +188,12 @@
                     const tab = tabs[key];
                     const panel = panels[key];
                     if (key === activeTab) {
-                        tab.classList.remove('border-transparent', 'text-gray-500');
+                        tab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                         tab.classList.add('border-indigo-500', 'text-indigo-600');
                         panel.classList.remove('hidden');
                     } else {
                         tab.classList.remove('border-indigo-500', 'text-indigo-600');
-                        tab.classList.add('border-transparent', 'text-gray-500');
+                        tab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
                         panel.classList.add('hidden');
                     }
                 });
@@ -189,15 +202,139 @@
             tabs.writing.addEventListener('click', () => switchTab('writing'));
             tabs.speaking.addEventListener('click', () => switchTab('speaking'));
 
-            // --- File Reader Logic ---
+            // --- Writing File Reader Logic ---
             fileUploads.writing.addEventListener('change', (event) => {
                 const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => { inputs.writing.value = e.target.result; };
+                if (!file) {
+                    writingUploadStatus.textContent = '';
+                    return;
+                }
+
+                const fileName = file.name;
+                const fileExtension = fileName.split('.').pop().toLowerCase();
+                const reader = new FileReader();
+
+                writingUploadStatus.textContent = `Đang đọc tệp: ${fileName}...`;
+                writingUploadStatus.className = 'text-sm text-blue-600 mt-2';
+
+                if (['txt', 'md'].includes(fileExtension)) {
+                    reader.onload = (e) => {
+                        inputs.writing.value = e.target.result;
+                        writingUploadStatus.textContent = 'Tải tệp lên thành công!';
+                        writingUploadStatus.className = 'text-sm text-green-600 mt-2';
+                    };
+                    reader.onerror = () => {
+                        writingUploadStatus.textContent = 'Lỗi khi đọc tệp.';
+                        writingUploadStatus.className = 'text-sm text-red-600 mt-2';
+                    };
                     reader.readAsText(file);
+                } else if (fileExtension === 'docx') {
+                    if (typeof mammoth === 'undefined') {
+                        writingUploadStatus.textContent = 'Lỗi: Thư viện xử lý .docx chưa được tải. Vui lòng kiểm tra kết nối mạng.';
+                        writingUploadStatus.className = 'text-sm text-red-600 mt-2';
+                        return;
+                    }
+                    reader.onload = (e) => {
+                        const arrayBuffer = e.target.result;
+                        mammoth.extractRawText({ arrayBuffer: arrayBuffer })
+                            .then(result => {
+                                inputs.writing.value = result.value;
+                                writingUploadStatus.textContent = 'Trích xuất văn bản từ .docx thành công!';
+                                writingUploadStatus.className = 'text-sm text-green-600 mt-2';
+                            })
+                            .catch(err => {
+                                console.error("Error processing .docx file:", err);
+                                writingUploadStatus.textContent = 'Lỗi khi xử lý tệp .docx.';
+                                writingUploadStatus.className = 'text-sm text-red-600 mt-2';
+                            });
+                    };
+                    reader.onerror = () => {
+                        writingUploadStatus.textContent = 'Lỗi khi đọc tệp .docx.';
+                        writingUploadStatus.className = 'text-sm text-red-600 mt-2';
+                    };
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    writingUploadStatus.textContent = 'Định dạng không hỗ trợ. Vui lòng chọn .txt, .md, hoặc .docx.';
+                    writingUploadStatus.className = 'text-sm text-red-600 mt-2';
+                    event.target.value = ''; // Clear the input
                 }
             });
+
+            // --- Audio Transcription Logic ---
+            fileUploads.speaking.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    if (file.size > 15 * 1024 * 1024) { // ~15MB limit
+                        transcriptStatus.textContent = 'Lỗi: Tệp âm thanh quá lớn (tối đa 15MB).';
+                        transcriptStatus.className = 'text-sm text-red-600 mt-2';
+                        fileUploads.speaking.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const base64Data = e.target.result.split(',')[1];
+                        transcribeAudio(base64Data, file.type);
+                    };
+                    reader.onerror = () => {
+                        transcriptStatus.textContent = 'Lỗi khi đọc tệp.';
+                        transcriptStatus.className = 'text-sm text-red-600 mt-2';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            const transcribeAudio = async (base64Data, mimeType) => {
+                transcriptStatus.textContent = 'Đang chuyển đổi âm thanh thành văn bản...';
+                transcriptStatus.className = 'text-sm text-blue-600 mt-2';
+                inputs.speaking.value = '';
+                loader.classList.remove('hidden');
+                feedbackOutput.innerHTML = '<p class="text-gray-500">Phản hồi của bạn sẽ xuất hiện ở đây.</p>';
+
+                const systemPrompt = "You are a highly accurate audio transcription service. Transcribe the user's audio to text. Only output the transcribed text, nothing else.";
+                const userPrompt = "Transcribe this audio file for me.";
+
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: userPrompt },
+                            { inlineData: { mimeType: mimeType, data: base64Data } }
+                        ]
+                    }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || `API request failed with status ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text && text.trim()) {
+                        inputs.speaking.value = text;
+                        transcriptStatus.textContent = 'Chuyển đổi thành công! Vui lòng kiểm tra văn bản và nhấn nhận phản hồi.';
+                        transcriptStatus.className = 'text-sm text-green-600 mt-2';
+                    } else {
+                        throw new Error("Không thể chuyển đổi âm thanh. Tệp có thể không chứa lời nói.");
+                    }
+                } catch (error) {
+                    console.error("Transcription Error:", error);
+                    transcriptStatus.textContent = `Lỗi chuyển đổi: ${error.message}`;
+                    transcriptStatus.className = 'text-sm text-red-600 mt-2';
+                } finally {
+                    loader.classList.add('hidden');
+                    fileUploads.speaking.value = '';
+                }
+            };
 
             // --- Simple Markdown to HTML converter ---
             function simpleMarkdownToHtml(md) {
@@ -216,7 +353,7 @@
                 const displayElement = questionDisplays[type];
                 displayElement.innerHTML = `<p class="text-gray-600">Đang tạo câu hỏi, vui lòng chờ...</p>`;
                 
-                const systemPrompt = "You are an IELTS expert specializing in creating exam questions. Your task is to generate a single, authentic-style IELTS question based on the user's request. Only output the question itself, without any introductory text like 'Here is a question...'";
+                const systemPrompt = "Bạn là một chuyên gia IELTS chuyên tạo câu hỏi thi. Nhiệm vụ của bạn là tạo ra một câu hỏi duy nhất theo phong cách IELTS chân thực dựa trên yêu cầu của người dùng. Hãy tạo câu hỏi bằng tiếng Việt và chỉ xuất ra câu hỏi, không có bất kỳ đoạn giới thiệu nào như 'Đây là câu hỏi...'";
                 let userPrompt = '';
 
                 if (type === 'writing') {
@@ -264,7 +401,7 @@
                 loader.classList.remove('hidden');
                 feedbackOutput.innerHTML = '<p class="text-gray-500">Phản hồi của bạn sẽ xuất hiện ở đây.</p>';
 
-                let systemPrompt = "You are an expert IELTS examiner. Provide detailed, constructive feedback on a candidate's submission based on the official band descriptors. For each criterion, provide a detailed analysis and an estimated band score. Conclude with an overall estimated band score and specific, actionable suggestions for improvement. Format your response clearly using Markdown.";
+                const systemPrompt = "Bạn là một giám khảo IELTS chuyên nghiệp. Nhiệm vụ của bạn là đưa ra nhận xét chi tiết, mang tính xây dựng cho bài làm của thí sinh bằng tiếng Việt. Hãy đánh giá bài làm dựa trên các tiêu chí chấm điểm IELTS chính thức (Task Achievement/Response, Coherence and Cohesion, Lexical Resource, Grammatical Range and Accuracy). Với mỗi tiêu chí, hãy phân tích chi tiết và đưa ra thang điểm ước tính. Cuối cùng, hãy đưa ra tổng điểm ước tính và những gợi ý cụ thể, khả thi để cải thiện. Hãy trả lời hoàn toàn bằng tiếng Việt. Định dạng câu trả lời của bạn một cách rõ ràng bằng Markdown.";
                 
                 let userPrompt = '';
                 if (type === 'writing') {
@@ -288,7 +425,10 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error?.message || `API request failed with status ${response.status}`);
+                    }
                     const result = await response.json();
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (text) {
